@@ -1,0 +1,104 @@
+body { 
+    background-color : #f1f2ed;
+    overflow: hidden;
+}
+
+.backgroundBox {
+    position: relative;
+    width:100vw;
+    height: 100vh;
+    z-index: -1;
+    margin: -5px;
+}
+
+video#bgvid { 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    background-size: cover; 
+}
+
+.sideButtons{
+    width: 75px;
+    position: absolute;
+    background: transparent;
+    border: none !important;
+    outline: none;
+    opacity: 0.5;
+    text-align: left;
+    color: white;
+}
+
+#audioPause{
+    bottom: 2em;
+    right: 2em;
+}
+
+#phoneCall{
+    top: 2em;
+    right: 2em;
+}
+
+.container{
+    z-index: 1;
+    height:100%;
+    width:100%;
+    color: #EEEEEE;
+}
+
+#icons {
+    font-size: 32px;
+}
+
+#playButton, #loading{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -170%);
+    text-align: center;
+}
+
+.centerBox{
+    /*width: 100%;*/
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -30%);
+    text-align: center;
+}
+
+.centerBox img {
+    /*max-width: 692px;*/
+    width: 60%;
+}
+
+.equalizer {
+    width: 80%;
+    max-width: 650px;
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 60%;
+    z-index: 999;
+}
+
+.equalizer_bar {
+    float: left;
+    height: 100%;
+}
+
+.equalizer_bar_component {
+    float: left;
+    width: 100%;
+    border-radius: 3px;
+    backgroundColor: transparent;
+}

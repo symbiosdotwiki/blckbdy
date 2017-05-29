@@ -1,0 +1,300 @@
+body {
+	font-family: Monospace;
+	background: white; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(aquamarine, lightpink); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(white, dimgrey); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(white, dimgrey); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(aquamarine, lightpink); /* Standard syntax */
+	color: #fff;
+	margin: 0px;
+	overflow: hidden;
+}
+body:before {
+	content: "";
+	position: fixed;
+	left: 0;
+	right: 0;
+	z-index: -2;
+	width: 100%;
+	height: 100%;
+
+	display: block;
+	background-image: url('../img/bg2.jpg');
+	background-size: cover;
+
+	-webkit-filter: blur(5px) grayscale(100%);
+	-moz-filter: blur(5px) grayscale(100%);
+	-o-filter: blur(5px) grayscale(100%);
+	-ms-filter: blur(5px) grayscale(100%);
+	filter: blur(5px) grayscale(100%);
+
+	//-webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    //filter: grayscale(100%);
+}
+body {
+	//z-index: -1;
+	position: fixed;
+	left: 0;
+	right: 0;
+	z-index: 0;
+	width: 100%;
+	height: 100%;
+	//font-family: 'Indie Flower', cursive;
+	font-family: 'Viga', sans-serif;
+}
+
+a {
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
+}
+
+.hidden {
+	visibility: hidden;
+	height: 0px;
+	transition: all 1s;
+	opacity: 0;
+	overflow: hidden;
+}
+.shown {
+	height: 100%;
+	visibility: visible;
+	transition: all 2s;
+	opacity: 1;
+}
+
+#info {
+	color: #fff;
+	position: absolute;
+	top: 10px;
+	width: 100%;
+	text-align: center;
+	z-index: 100;
+	display:block;
+}
+#info a, .button { 
+	color: #f00; 
+	font-weight: bold; 
+	text-decoration: underline; 
+	cursor: pointer 
+}
+.tag {
+	position: absolute;
+	font-size: 200px;
+	opacity: .8;
+}
+.label {
+	color: black;
+	background: white;
+	position: relative;
+	border-radius: 4px;
+	bottom: -5px;
+	padding-right: 8px;
+	padding-left: 8px; 
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: .8em;
+}
+.circle-red {
+	position: absolute;
+	background-color: red;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	visibility: hidden;
+}
+.circle-green {
+	position: absolute;
+	background-color: green;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	visibility: hidden;
+}
+.pointer {
+	content: "";
+	width: 2px;
+	position: absolute;
+	bottom: -40px;
+	height: 40px;
+	background: white;
+}
+.board-label {
+	color: white;
+	background: black;
+	left: -50%;
+	z-index: 10;
+	font-size: 1em;
+}
+.board-label + .pointer {
+	width: 0px;
+}
+.board-label + .pointer:after {
+	position: absolute;
+	top: 1.19em;
+    content: '';
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: .4em .4em 0px .5em;
+    border-color: #000000 transparent transparent transparent;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: .3em;
+    left: 50%; 
+    transform: translateX(-50%);
+}
+
+.noselect {
+	webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  not supported by any browser */
+    cursor: default;
+    pointer-events: none;
+}
+
+#overlay {
+	width: 100vw;
+	height: 100vh;
+	background-color: #222;
+	z-index: 100000000;
+	position: absolute;
+	transition: all 1.2s;
+	opacity: 100;
+    -moz-opacity: 100;
+	filter: alpha(opacity=100);
+	visibility: visible;
+	color: white;
+}
+
+#expand-overlay {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	transform: translateY(100%);
+	padding: 5px;
+	cursor: default;
+	background-color: #222;
+}
+.expand-overlay {
+	float: right;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.slideUp {
+	transform: translateY(-100%);
+	transition: all 1.2s;
+	opacity: 0;
+    -moz-opacity: 0;
+	filter: alpha(opacity=0);
+	visibility: hidden;
+}
+
+.arrow-down {
+	position: relative;
+	width: 0; 
+	height: 0; 
+	border-left: 20px solid transparent;
+	border-right: 20px solid transparent;
+	border-top: 20px solid white;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.arrow-right {
+	position: relative;
+  width: 0; 
+  height: 0; 
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  left: 50%;
+  border-left: 40px solid white;
+  transform: translateX(-50%);
+}
+
+#overlay-container {
+	overflow-y: scroll;
+	width: 95%;
+	height: 95%;
+	box-sizing: border-box;
+	padding-bottom: 5%;
+}
+
+#overlay-container::-webkit-scrollbar-track {
+    background-color: #222;
+}
+ 
+#overlay-container::-webkit-scrollbar-thumb {
+  background-color: #222;
+}
+
+#overlay-container {
+    -ms-overflow-style: none;  // IE 10+
+    overflow: -moz-scrollbars-none;  // Firefox
+}
+#overlay-container::-webkit-scrollbar { 
+    display: none;  // Safari and Chrome
+}
+
+.text {
+	width: 100%;
+	padding-left: 5%;
+	padding-right: 5%;
+	padding-bottom: 2.5%;
+	padding-top: 2.5%;
+	text-align: justify;
+	box-sizing: border-box;
+}
+
+#title {
+	font-size: 3em;
+	text-align: center;
+}
+
+#overlay-text {
+	font-size: 2em;
+}
+
+.section-header {
+	font-size: 1em;
+	color: grey;
+}
+b {
+	color: grey;
+}
+.section {
+	margin-bottom: 1em;
+	font-size: .7em;
+}
+
+.X {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 40px; /* this can be anything */
+    width: 40px;  /* ...but maintain 1:1 aspect ratio */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.X::before,
+.X::after {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 4px; /* cross thickness */
+    background-color: white;
+}
+
+.X::before {
+    transform: rotate(45deg);
+}
+
+.X::after {
+    transform: rotate(-45deg);
+}
