@@ -238,6 +238,14 @@
 
 			init();
 			animate();
+			setUpdateCubeMap();
+
+			function setUpdateCubeMap() {
+				renderCubeMap();
+				setTimeout(function(){
+					setUpdateCubeMap();
+				}, 100);
+			}
 
 			function init() {
 
@@ -290,14 +298,10 @@
 				mirrorSphereCamera.autoClearColor = true;
 				mirrorSphereCamera.autoClear = true;
 
-				mirrorMaterial = new THREE.MeshPhysicalMaterial( { 
-					color: new THREE.Color().setHSL( .2, 0, 0.25 ),
-					metalness: .5,
-					roughness: 0.2,
-					clearCoat:  1.0 ,
-					clearCoatRoughness: .1,
-					reflectivity: 1.0,
-					envMap: mirrorSphereCamera.renderTarget.texture,
+				mirrorMaterial = new THREE.MeshBasicMaterial( { 
+					color: 0xffffff,
+					refractionRatio: 0.95,
+					envMap: mirrorSphereCamera.renderTarget,
 					//normalMap: earthMap,
 				} );
 
@@ -344,6 +348,8 @@
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
+				renderCubeMap();
+
 			}
 
 			function onWindowResize( event ) {
@@ -368,6 +374,43 @@
 
 				render();
 				stats.update();
+
+			}
+
+			function renderCubeMap(){
+				sphereMesh.visible = false;
+
+				if(!firstTex){
+					mirrorSphereCamera = new THREE.CubeCamera( 0.01, 50, 256 );
+					mirrorSphereCamera.autoClear = true;
+					mirrorSphereCamera.autoClearColor = true;
+					
+				}
+				else{
+					mirrorSphereCamera.renderTarget.dispose();
+					mirrorSphereCamera.renderTarget.copy(firstTex);
+				}
+				mirrorSphereCamera.position.setFromMatrixPosition( sphereMesh.matrixWorld );
+				mirrorSphereCamera.updateCubeMap( renderer, scene );
+				
+				/*
+				
+				*/
+
+					//sphereMesh.add(mirrorSphereCamera);
+
+					mirrorMaterial.envMap = mirrorSphereCamera.renderTarget;
+					sphereMesh.material = mirrorMaterial;
+				
+				
+  				sphereMesh.visible = true;
+
+
+				if(!firstTex){
+					firstTex = mirrorSphereCamera.renderTarget.clone();
+					firstTex.mapping = THREE.CubeRefractionMapping;
+					console.log(firstTex);
+				}
 
 			}
 
@@ -416,38 +459,8 @@
 				sphereMesh.position.z = newPos.z;
 				*/
 
-				sphereMesh.visible = false;
-
-				if(!firstTex){
-					mirrorSphereCamera = new THREE.CubeCamera( 0.001, 50, 512 );
-					
-					
-				}
-				else{
-					mirrorSphereCamera.renderTarget.dispose();
-					mirrorSphereCamera.renderTarget.copy(firstTex);
-				}
-				mirrorSphereCamera.position.setFromMatrixPosition( sphereMesh.matrixWorld );
-				mirrorSphereCamera.updateCubeMap( renderer, scene );
-				
-				/*
-				
-				*/
-
-					//sphereMesh.add(mirrorSphereCamera);
-					mirrorMaterial.envMap = mirrorSphereCamera.renderTarget;
-					sphereMesh.material = mirrorMaterial;
-				
-				
-  				sphereMesh.visible = true;
-
 				
 				composer.render( 0.01 );
-
-				if(!firstTex){
-					firstTex = mirrorSphereCamera.renderTarget.clone();
-					console.log(firstTex);
-				}
 
 			}
 
