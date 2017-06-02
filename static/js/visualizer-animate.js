@@ -4,7 +4,27 @@ function init() {
 	isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 	isIE = !webkitAudioSafe();
 
+	loadAudio();
+
 	createEqualizer();
+
+	pauseButton.click(pauseFade);
+
+	if (!isMobile && !isIE){
+		$(window).keypress(function (e) {
+		    if(e.keyCode == 32){
+		        pauseButton.click();
+		    }
+		});
+	}
+	else{
+		$('#tester').hide();
+		$('#playButton').click(function(){
+			audio[0].play();
+			playButton.hide();
+			notClicked = false;
+		});
+	}
 
 	container = document.getElementById( 'container' );
 

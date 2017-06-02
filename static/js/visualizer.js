@@ -32,7 +32,6 @@ var figure8OrbitPosition = function(object, radius){
 
 function loadAudio(){
 	loadingIcon.show();
-	var sourceUrl = audioPath + curAudio.toString() + audioType;
 	audio.attr("src", sourceUrl);
 	audio[0].pause();
 	audio[0].load();
@@ -75,8 +74,8 @@ function webkitAudioSafe(){
 
 function createEqualizer() {
     if(audio[0].paused) {
-    	audio[0].load();
-    	audio[0].play();
+    	//audio[0].load();
+    	//audio[0].play();
        window.setTimeout(createEqualizer, 100);
     } else {
       audio.equalizer({
