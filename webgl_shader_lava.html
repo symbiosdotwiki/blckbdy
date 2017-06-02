@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - materials - shaders [lava]</title>
+		<title>blckbdy</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -29,12 +29,25 @@
 			}
 
 			#oldie a { color:#da0 }
+
+			#tester {
+				position: fixed;
+			}
 		</style>
 	</head>
 	<body>
 
-		<div id="container"></div>
-		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> - shader material demo. featuring lava shader by <a href="http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=21057" target="_blank">TheGameMaker</a></div>
+		<div id="container">
+
+			<div id="tester" style="width:600px;height:250px;"></div>
+
+			<audio id="audioPlayer" src="/static/audio/track.mp3"  type="audio/mpeg"></audio>
+
+		</div>
+
+		<script type="text/javascript" src="static/js/jquery-2.2.2.min.js"> </script>
+		<script type="text/javascript" src="static/js/jquery.reverseorder.js"></script>
+		<script type="text/javascript" src="static/js/jquery.equalizer.js"></script>
 
 		<script src="static/js/three.js"></script>
 
@@ -52,12 +65,20 @@
 		<script src="static/js/Detector.js"></script>
 		<script src="static/js/libs/stats.min.js"></script>
 
+		<script src="static/js/libs/d3.min.js"></script>
+		<script src="static/js/libs/plotly-latest.min.js"></script>
+
+		<script src="static/js/plot.js"></script>
+
 		<script id="fragmentShader" type="x-shader/x-fragment">
 
 			uniform float time;
 			uniform float hue;
 			uniform float saturation;
 			uniform vec2 resolution;
+			uniform vec2 deltaUV;
+			uniform bool setHue;
+			uniform bool setSat;
 
 			uniform float fogDensity;
 			uniform vec3 fogColor;
@@ -108,6 +129,27 @@
 				return replaceRGB(color, colorRGB);
 			}
 
+			vec4 addH(float h, vec4 color){
+				vec3 colorRGB = rgb2hsv(color.rgb);
+				colorRGB.x += h;
+				colorRGB = hsv2rgb(colorRGB);
+				return replaceRGB(color, colorRGB);
+			}
+
+			vec4 addS(float s, vec4 color){
+				vec3 colorRGB = rgb2hsv(color.rgb);
+				colorRGB.y += s;
+				colorRGB = hsv2rgb(colorRGB);
+				return replaceRGB(color, colorRGB);
+			}
+
+			vec4 addV(float v, vec4 color){
+				vec3 colorRGB = rgb2hsv(color.rgb);
+				colorRGB.z += v;
+				colorRGB = hsv2rgb(colorRGB);
+				return replaceRGB(color, colorRGB);
+			}
+
 			float getH(vec4 color){
 				return rgb2hsv(color.rgb).x;
 			}
@@ -121,12 +163,17 @@
 			}
 
 			void main( void ) {
+				vec2 vUv2 = vUv + deltaUV * time;
+				
 
-				vec2 position = -1.0 + 2.0 * vUv;
+				vUv2.x -= (resolution.x * floor(vUv2.x/resolution.x));
+				vUv2.y -= (resolution.y * floor(vUv2.y/resolution.y));
 
-				vec4 noise = texture2D( texture1, vUv );
-				vec2 T1 = vUv + vec2( 1.5, -1.5 ) * time  *0.02;
-				vec2 T2 = vUv + vec2( -0.5, 2.0 ) * time * 0.01;
+				vec2 position = -1.0 + 2.0 * vUv2;
+
+				vec4 noise = texture2D( texture1, vUv2 );
+				vec2 T1 = vUv2 + vec2( 1.5, -1.5 ) * time  *0.02;
+				vec2 T2 = vUv2 + vec2( -0.5, 2.0 ) * time * 0.01;
 
 				T1.x += noise.x * 2.0;
 				T1.y += noise.y * 2.0;
@@ -150,7 +197,21 @@
 				fogFactor = 1.0 - clamp( fogFactor, 0.0, 1.0 );
 
 				gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
-				//gl_FragColor = setH(hue, gl_FragColor);
+				if(setHue){
+					gl_FragColor = setH(hue, gl_FragColor);
+				}
+				else{
+					gl_FragColor = addH(hue, gl_FragColor);
+				}
+
+				if(setSat){
+					gl_FragColor = setS(saturation, gl_FragColor);
+				}
+				else{
+					gl_FragColor = addS(saturation, gl_FragColor);
+				}
+
+				
 				//gl_FragColor = setV(0.2, gl_FragColor);
 				//gl_FragColor = setS(saturation, gl_FragColor);
 				vec4 glow = gl_FragColor;
@@ -176,295 +237,12 @@
 		</script>
 
 		<script>
-
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
-			var container, stats;
-
-			var clock = new THREE.Clock();
-
-			var camera, scene, renderer, composer;
-
-			var uniforms, material, mesh;
-
-			var mouseX = 0, mouseY = 0,
-			lat = 0, lon = 0, phy = 0, theta = 0;
-
-			var width = window.innerWidth || 2;
-			var height = window.innerHeight || 2;
-
-			var windowHalfX = width / 2;
-			var windowHalfY = height / 2;
-
-			var saturation = .5;
-			var hue = .5;
-
-			var torusSize = [.65, 0.3, 30, 30]; 
-
-			var time = 0;
-
-			var mirrorSphereCamera = null;
-			var sphereMesh = null;
-
-			var textureLoader = new THREE.TextureLoader();
-			var earthMap = null;
-
-			var mirrorMaterial;
-			var firstTex;
-
-			var sphereObject = function(radius){
-				return new THREE.SphereBufferGeometry( radius, 32, 16 );
-			}
-
-			var torusKnotObject = function(radius, diameter, p, q){
-				return new THREE.TorusKnotGeometry(radius, diameter, 100, 30, p, q);
-			}
-
-			var orbitPosition = function(object, radius, time){
-				return {
-					'x': radius * Math.cos(.1*time),
-					'y': 0,
-					'z': radius * Math.sin(.1*time),
-				}
-			}
-
-			var figure8OrbitPosition = function(object, radius, time){
-				return {
-					'x': 1.2 * radius * Math.sin(.1*time),
-					'y': 0,
-					'z': .8 * radius * Math.sin(.2*time),
-				}
-			}
-
-			init();
-			animate();
-			setUpdateCubeMap();
-
-			function setUpdateCubeMap() {
-				renderCubeMap();
-				setTimeout(function(){
-					setUpdateCubeMap();
-				}, 100);
-			}
-
-			function init() {
-
-				container = document.getElementById( 'container' );
-
-				camera = new THREE.PerspectiveCamera( 35, windowHalfX / windowHalfY, 1, 3000 );
-				camera.position.z = 4;
-
-				scene = new THREE.Scene();
-
-				uniforms = {
-
-					fogDensity: { value: 0.45 },
-					fogColor:   { value: new THREE.Vector3( 0, 0, 0 ) },
-					time:       { value: 1.0 },
-					hue: 		{ value: .5},
-					saturation: {value: .5},
-					resolution: { value: new THREE.Vector2() },
-					uvScale:    { value: new THREE.Vector2( 3.0, 1.0 ) },
-					texture1:   { value: textureLoader.load( "static/img/lava/cloud.png" ) },
-					texture2:   { value: textureLoader.load( "static/img/turing.png" ) },
-
-				};
-
-				uniforms.texture1.value.wrapS = uniforms.texture1.value.wrapT = THREE.RepeatWrapping;
-				uniforms.texture2.value.wrapS = uniforms.texture2.value.wrapT = THREE.RepeatWrapping;
-
-				material = new THREE.ShaderMaterial( {
-
-					uniforms: uniforms,
-					vertexShader: document.getElementById( 'vertexShader' ).textContent,
-					fragmentShader: document.getElementById( 'fragmentShader' ).textContent
-
-				} );
-
-				mesh = new THREE.Mesh( new THREE.TorusGeometry( torusSize[0], torusSize[1], torusSize[2], torusSize[3] ), material );
-				mesh.rotation.x = 0.3;
-
-				var plight = new THREE.PointLight( 0x999999, .4, 100 );
-				plight.position.set( 0, 0, 0 );
-				scene.add( plight );
-
-				var alight = new THREE.AmbientLight( 0x444444);
-				scene.add( alight );
-
-
-				var geometry = new THREE.SphereBufferGeometry( .2, 32, 16 );
-
-				mirrorSphereCamera = new THREE.CubeCamera( 0.001, 50, 512 );
-				mirrorSphereCamera.autoClearColor = true;
-				mirrorSphereCamera.autoClear = true;
-
-				mirrorMaterial = new THREE.MeshBasicMaterial( { 
-					color: 0xffffff,
-					refractionRatio: 0.95,
-					envMap: mirrorSphereCamera.renderTarget,
-					//normalMap: earthMap,
-				} );
-
-				sphereMesh = new THREE.Mesh( geometry, mirrorMaterial );
-				scene.add(mirrorSphereCamera);
-				sphereMesh.position.x = 0;
-				sphereMesh.position.y = 0;
-				sphereMesh.position.z = 0;
-				mesh.add( sphereMesh );
-
-				scene.add(mesh);
-
-				earthMap = textureLoader.load( "static/img/lava/earthNormalMap.jpg" );
-
-				//
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				container.appendChild( renderer.domElement );
-				renderer.autoClear = false;
-
-				//
-
-				stats = new Stats();
-				//container.appendChild( stats.dom );
-
-				//
-
-				var renderModel = new THREE.RenderPass( scene, camera );
-				var effectBloom = new THREE.BloomPass( 1.1 );
-				var effectFilm = new THREE.FilmPass( 0.0, 0.95, 2048, false );
-
-				effectFilm.renderToScreen = true;
-
-				composer = new THREE.EffectComposer( renderer );
-
-				composer.addPass( renderModel );
-				composer.addPass( effectBloom );
-				composer.addPass( effectFilm );
-
-				//
-
-				onWindowResize();
-
-				window.addEventListener( 'resize', onWindowResize, false );
-
-				renderCubeMap();
-
-			}
-
-			function onWindowResize( event ) {
-
-				uniforms.resolution.value.x = window.innerWidth;
-				uniforms.resolution.value.y = window.innerHeight;
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				composer.reset();
-
-			}
-
-			//
-
-			function animate() {
-
-				requestAnimationFrame( animate );
-
-				render();
-				stats.update();
-
-			}
-
-			function renderCubeMap(){
-				sphereMesh.visible = false;
-
-				if(!firstTex){
-					mirrorSphereCamera = new THREE.CubeCamera( 0.01, 50, 256 );
-					mirrorSphereCamera.autoClear = true;
-					mirrorSphereCamera.autoClearColor = true;
-					
-				}
-				else{
-					mirrorSphereCamera.renderTarget.dispose();
-					mirrorSphereCamera.renderTarget.copy(firstTex);
-				}
-				mirrorSphereCamera.position.setFromMatrixPosition( sphereMesh.matrixWorld );
-				mirrorSphereCamera.updateCubeMap( renderer, scene );
-				
-				/*
-				
-				*/
-
-					//sphereMesh.add(mirrorSphereCamera);
-
-					mirrorMaterial.envMap = mirrorSphereCamera.renderTarget;
-					sphereMesh.material = mirrorMaterial;
-				
-				
-  				sphereMesh.visible = true;
-
-
-				if(!firstTex){
-					firstTex = mirrorSphereCamera.renderTarget.clone();
-					firstTex.mapping = THREE.CubeRefractionMapping;
-					console.log(firstTex);
-				}
-
-			}
-
-			function render() {
-
-				renderer.setRenderTarget( null );
-				renderer.clear();
-
-				var delta = 5 * clock.getDelta();
-
-				time += delta;
-
-				uniforms.time.value += 0.2 * delta;
-				//uniforms.hue.value = hue + 0.5 * Math.sin(.1*time);
-				//uniforms.saturation.value = saturation + 0.5 * Math.sin(.05*time);
-
-				//console.log(uniforms.saturation.value);
-
-				var valAdd = 4*Math.sin(delta/100);
-
-				//mesh.geometry = sphereObject(.6);
-
-				//mesh.geometry = new THREE.TorusGeometry( torusSize[0], torusSize[1] + valAdd, torusSize[2], torusSize[3] + valAdd );
-
-				/*
-				scene.remove(mesh);
-
-				mesh.geometry.dispose();
-				mesh.material.dispose();
-				//mesh.texture.dispose();
-
-				mesh.geometry = new THREE.TorusKnotGeometry(.65 + .4*Math.sin(.06*time), .15, 100, 30, 2 + Math.sin(.06*time), 2 + 2*Math.sin(.06*time) );
-				*/
-
-				mesh.rotation.y += 0.0125 * delta;
-				mesh.rotation.x += 0.05 * delta;
-
-				//scene.add(mesh);
-
-				sphereMesh.position.z = Math.sin(.15*time);
-
-				/*
-				var newPos = figure8OrbitPosition(sphereMesh, 1, time);
-				sphereMesh.position.x = newPos.x;
-				sphereMesh.position.y = newPos.y;
-				sphereMesh.position.z = newPos.z;
-				*/
-
-				
-				composer.render( 0.01 );
-
-			}
-
 		</script>
+		<script src="static/js/visualizer-variables.js"></script>
+		<script src="static/js/visualizer-triggers.js"></script>
+		<script src="static/js/visualizer.js"></script>
+		<script src="static/js/visualizer-animate.js"></script>
 
 	</body>
 </html>

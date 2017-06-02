@@ -37,8 +37,12 @@ function hexToRgb(hex) {
         var color_degrading_degree = -7;   // must be an integer
         var thisAudio = $(this).attr('id');
         var equalizer = $("."+thisAudio+".equalizer");
+        var equiFunction = function(frequencyData){};
 
-
+            if (typeof options === 'object' && 'equiFunction' in options) {
+                equiFunction = options.equiFunction;
+            } 
+            
             if (typeof options === 'object' && 'width' in options && options.width > 0) {
                 var width = options.width;
             } else {
@@ -177,7 +181,8 @@ function hexToRgb(hex) {
     {
         if (music == true && $("#"+thisAudio).get(0).paused == false) {
             analyser.getByteFrequencyData(frequencyData);
-        
+            equiFunction(frequencyData);
+            /*
             for(var i = 0; i < n_bars; i++){
                 var val = frequencyData[i] / 255.0;
                 var j = Math.round((val*n_components_per_bar));
@@ -188,7 +193,9 @@ function hexToRgb(hex) {
                     $("#" + thisAudio + "_bar_" + i + "_component_" + k).css("backgroundColor", base_color);
                 }
             }
+            */
         } 
+        /*
         else{
             for(var i = 0; i < n_bars; i++){
                 for(var k = 0; k < n_components_per_bar; k++){
@@ -196,6 +203,7 @@ function hexToRgb(hex) {
                 }
             }
         }
+        */
     }
 
     setInterval(activate_equalizer, refresh_time);
