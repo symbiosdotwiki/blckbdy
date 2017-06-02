@@ -45,11 +45,13 @@ var isMobile = false;
 
 var bpm = 126.0;
 var songTime = 0;
+var seeking = false;
 
 var audio = $('#audioPlayer');
 var pauseButton = $('#audioPause');
 var playButton = $('#playButton');
 var loadingIcon = $('#loading');
 var audioIcon = $('#audioIcon');
+var progressBar = $('progress');
 
 var sourceUrl = "static/audio/track.mp3";

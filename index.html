@@ -6,36 +6,6 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="static/css/styles.css">
 		<link rel="stylesheet" href="static/css/font-awesome.min.css">
-		<style>
-			body {
-				color: #ffffff;
-				font-family:Monospace;
-				font-size:13px;
-				text-align:center;
-				font-weight: bold;
-
-				background-color: #000000;
-				margin: 0px;
-				overflow: hidden;
-			}
-
-			#info {
-				position: absolute;
-				top: 0px; width: 100%;
-				padding: 5px;
-			}
-
-			a {
-
-				color: #ffffff;
-			}
-
-			#oldie a { color:#da0 }
-
-			#tester {
-				position: fixed;
-			}
-		</style>
 	</head>
 	<body>
 
@@ -44,6 +14,7 @@
 			<div id="tester" style="width:600px;height:250px;"></div>
 
 			<audio id="audioPlayer" type="audio/mpeg"></audio>
+			<progress min="0" max="100" value="0"></progress>
 
 			<div id='icons' class='centerBox'>
 				<div id='playButton' style="display: none;">
@@ -87,10 +58,12 @@
 			uniform float time;
 			uniform float hue;
 			uniform float saturation;
+			uniform float intensity;
 			uniform vec2 resolution;
 			uniform vec2 deltaUV;
 			uniform bool setHue;
 			uniform bool setSat;
+			uniform bool setInt;
 
 			uniform float fogDensity;
 			uniform vec3 fogColor;
@@ -157,7 +130,7 @@
 
 			vec4 addV(float v, vec4 color){
 				vec3 colorRGB = rgb2hsv(color.rgb);
-				colorRGB.z += v;
+				colorRGB.z *= v;
 				colorRGB = hsv2rgb(colorRGB);
 				return replaceRGB(color, colorRGB);
 			}
@@ -223,9 +196,10 @@
 					gl_FragColor = addS(saturation, gl_FragColor);
 				}
 
-				
-				//gl_FragColor = setV(0.2, gl_FragColor);
-				//gl_FragColor = setS(saturation, gl_FragColor);
+				if(setInt){
+					gl_FragColor = addV(intensity, gl_FragColor);
+				}
+
 				vec4 glow = gl_FragColor;
 
 			}

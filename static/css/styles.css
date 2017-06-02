@@ -71,7 +71,7 @@ video#bgvid {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -30%);
+    transform: translate(-50%, -50%);
     text-align: center;
 }
 
@@ -101,4 +101,38 @@ video#bgvid {
     width: 100%;
     border-radius: 3px;
     backgroundColor: transparent;
+}
+
+progress {
+    position: absolute;
+    z-index: 100;
+}
+
+body {
+    color: #ffffff;
+    font-family:Monospace;
+    font-size:13px;
+    text-align:center;
+    font-weight: bold;
+
+    background-color: #000000;
+    margin: 0px;
+    overflow: hidden;
+}
+
+#info {
+    position: absolute;
+    top: 0px; width: 100%;
+    padding: 5px;
+}
+
+a {
+
+    color: #ffffff;
+}
+
+#oldie a { color:#da0 }
+
+#tester {
+    position: fixed;
 }

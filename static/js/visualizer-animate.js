@@ -8,6 +8,10 @@ function init() {
 
 	createEqualizer();
 
+	progressBar.click(function(e){
+		seek(e);
+	});
+
 	pauseButton.click(pauseFade);
 
 	if (!isMobile && !isIE){
@@ -38,8 +42,9 @@ function init() {
 		fogDensity: { value: 0.45 },
 		fogColor:   { value: new THREE.Vector3( 0, 0, 0 ) },
 		time:       { value: 1.0 },
-		hue: 		{ value: .5},
-		saturation: {value: .5},
+		hue: 		{ value: 0.5},
+		saturation: { value: 0.5},
+		intensity: 	{ value: 0.0},
 		resolution: { value: new THREE.Vector2() },
 		uvScale:    { value: new THREE.Vector2( 20.0, 1.0 ) },
 		deltaUV:    { value: new THREE.Vector2( .1, 0.0 ) },
@@ -47,6 +52,7 @@ function init() {
 		texture2:   { value: textureLoader.load( "static/img/turing.png" ) },
 		setHue: 	{ value: true },
 		setSat: 	{ value: true },
+		setInt: 	{ value: false },
 
 	};
 
@@ -63,8 +69,6 @@ function init() {
 
 	mesh = new THREE.Mesh(new THREE.SphereBufferGeometry( .6, 30, 30 ) , material );
 	
-	//mesh.geometry = new THREE.TorusKnotGeometry(.65 , .15, 200, 30, 4, 5 );
-	
 	mesh.rotation.x = 0.3;
 
 	var plight = new THREE.PointLight( 0x999999, .4, 100 );
@@ -77,18 +81,11 @@ function init() {
 
 	var geometry = new THREE.SphereBufferGeometry( .2, 32, 16 );
 
-	mirrorSphereCamera = new THREE.CubeCamera( 0.001, 50, 512 );
-	mirrorSphereCamera.autoClearColor = true;
-	mirrorSphereCamera.autoClear = true;
-
 	mirrorMaterial = new THREE.MeshBasicMaterial( { 
 		color: 0x000000,
-		//refractionRatio: 0.95,
-		//envMap: mirrorSphereCamera.renderTarget,
 	} );
 
 	sphereMesh = new THREE.Mesh( geometry, mirrorMaterial );
-	scene.add(mirrorSphereCamera);
 	sphereMesh.position.x = 0;
 	sphereMesh.position.y = 0;
 	sphereMesh.position.z = 0;
@@ -96,8 +93,6 @@ function init() {
 
 	scene.add(mesh);
 	mesh.visible = false;
-
-	earthMap = textureLoader.load( "static/img/lava/earthNormalMap.jpg" );
 
 	renderer = new THREE.WebGLRenderer( { antialias: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
@@ -127,6 +122,7 @@ function init() {
 function animate() {
 	requestAnimationFrame( animate );
 	render();
+	updateHSV();
 }
 
 function setUpdateCubeMap() {
@@ -170,31 +166,13 @@ function render() {
 	renderer.clear();
 
 	var delta = 5 * clock.getDelta();
-
 	time += delta;
-
 	uniforms.time.value += 0.2 * delta;
-	//uniforms.hue.value = hue + 0.5 * Math.sin(.1*time);
-	//uniforms.saturation.value = saturation + 0.5 * Math.sin(.05*time);
-
-	//console.log(uniforms.saturation.value);
 
 	var valAdd = 4*Math.sin(delta/100);
-
-
 	setMeshRotation(delta);
-	setSpherePos(sphereMesh);
-
-	/*
-	var newPos = figure8OrbitPosition(sphereMesh, 1, time);
-	sphereMesh.position.x = newPos.x;
-	sphereMesh.position.y = newPos.y;
-	sphereMesh.position.z = newPos.z;
-	*/
-
-	
+	setSpherePos(sphereMesh);	
 	composer.render( 0.01 );
-
 }
 
 init();

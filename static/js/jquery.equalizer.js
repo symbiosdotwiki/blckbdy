@@ -15,6 +15,7 @@
  * 
  * For details please refer to: www.cooperativecomputing.com
  */
+var frequencyData = null;
 
 function hexToRgb(hex) {
     // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -120,7 +121,7 @@ function hexToRgb(hex) {
         var audioSrc = audioCtx.createMediaElementSource(audioElement);
         var analyser = audioCtx.createAnalyser();
 
-        var frequencyData = new Uint8Array(n_bars);
+        frequencyData = new Uint8Array(n_bars);
 
         analyser.smoothingTimeConstant = 0.3;
         analyser.fftSize = 1024;
@@ -204,6 +205,10 @@ function hexToRgb(hex) {
             }
         }
         */
+    }
+
+    function getFrequencyData(){
+        return frequencyData;
     }
 
     setInterval(activate_equalizer, refresh_time);

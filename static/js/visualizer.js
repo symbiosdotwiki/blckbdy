@@ -62,6 +62,22 @@ function pauseFade(){
 	}
 }
 
+function setProgressBar(){
+    var track_length = audio[0].duration;
+    var secs = audio[0].currentTime;
+    var progress = (secs/track_length) * 100;
+    progressBar.attr('value', progress);
+}
+
+function seek(e) {
+    var percent = (e.pageX - progressBar.offset().left) / progressBar.width();
+    audio[0].currentTime = percent * audio[0].duration;
+    progressBar.value = percent / 100;
+    seeking = true;
+    updateStuff();
+    console.log(triggered);
+}
+
 function webkitAudioSafe(){
 	try{
 		var test = new (window.AudioContext || window.webkitAudioContext)();
@@ -74,8 +90,6 @@ function webkitAudioSafe(){
 
 function createEqualizer() {
     if(audio[0].paused) {
-    	//audio[0].load();
-    	//audio[0].play();
        window.setTimeout(createEqualizer, 100);
     } else {
       audio.equalizer({
@@ -86,7 +100,7 @@ function createEqualizer() {
 			barMargin: 3,
 			componentMargin: compMargin,
 			refreshTime: refreshTime,
-			equiFunction: updateHSV,
+			//equiFunction: updateHSV,
 		});
       $(audio[0]).bind('timeupdate', updateTime);
     }
@@ -94,19 +108,32 @@ function createEqualizer() {
 
 var updateTime = function(){
     songTime = this.currentTime;
-    //console.log(bars);
+    setProgressBar();
 }
 
 var updateStuff = function(){
-    var bars = songTime * bpm / 60 / 4;
+    var curBar = songTime * bpm / 60 / 4;
     for(var key in audioTriggers){
-    	if(Math.abs(bars - parseFloat(key)) < .125){
-    		if(triggered.indexOf(key) < 0){
+    	var keyBar = parseFloat(key);
+    	var beenTriggered = triggered.indexOf(key) > -1;
+    	if(Math.abs(curBar - keyBar) < .125 || (curBar > keyBar && !seeking)){
+    		if(!beenTriggered){
     			triggered.push(key);
     			audioTriggers[key]();
     		}
     	}
+    	else if(curBar < keyBar){
+    		if(beenTriggered){
+    			triggered.pop(key);
+    		}
+    	}
+    	else if(curBar > keyBar){
+    		if(!beenTriggered){
+    			triggered.push(key);
+    		}
+    	}
     }
+    seeking = false;
 }
 
 var getHueVal = function(audioVal){
@@ -114,6 +141,9 @@ var getHueVal = function(audioVal){
 }
 
 var getSatVal = function(audioVal){
+	return 0;
+}
+var getIntensityVal = function(audioVal){
 	return 0;
 }
 
@@ -126,25 +156,34 @@ var setMeshRotation = function(delta){
 	mesh.rotation.x += 0.05 * delta;
 }
 
-var updateHSV = function(frequencyData){
+var updateHSV = function(){
+	if(!frequencyData){
+		return false;
+	}
 	updateStuff(songTime);
 	var sum1 = 0;
 	var sum2 = 0;
+	var sum3 = 0;
 	var length = frequencyData.length;
 	var frac = 1.0;
 	for(var i = 0; i < length/frac; i++){
         var val = frequencyData[i] / 255.0;
         sum1 += val;
     }
-    for(var i = 3*length/4; i < length; i++){
+    for(var i = 1*length/4; i < 3*length/4; i++){
         var val = frequencyData[i] / 255.0;
         sum2 += val;
+    }
+    for(var i = 3*length/4; i < length; i++){
+        var val = frequencyData[i] / 255.0;
+        sum3 += val;
     }
     sum1 = frac * sum1
     //uniforms.saturation.value = saturation + sum1 ;
     //console.log(sum2 / length*Math.sin(.05*time));
     uniforms.hue.value = getHueVal(sum1 / length);
-    uniforms.saturation.value = getSatVal(sum2 / length);
+    uniforms.saturation.value = getSatVal(sum3 / length);
+    uniforms.intensity.value = getIntensityVal(sum2 / length);
 
     trace1.x = [];
     trace1.y = [];
@@ -153,6 +192,8 @@ var updateHSV = function(frequencyData){
     	trace1.y.push(frequencyData[i]/20 * blackBody(1.0, 400.0, i/length, sum1));
     }
     Plotly.newPlot(graphDiv, data, layout, plotOptions);
+
+    visualizerFunctionStack();
 }
 
 function blackBody(c1, c2, v, t){
