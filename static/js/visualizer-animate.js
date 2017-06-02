@@ -161,22 +161,9 @@ function render() {
 
 	var valAdd = 4*Math.sin(delta/100);
 
-	//mesh.geometry = sphereObject(.6);
 
-	//mesh.geometry = new THREE.TorusGeometry( torusSize[0], torusSize[1] + valAdd, torusSize[2], torusSize[3] + valAdd );
-
-	/*
-	scene.remove(mesh);
-
-	mesh.geometry.dispose();
-	mesh.material.dispose();
-	//mesh.texture.dispose();
-
-	mesh.geometry = new THREE.TorusKnotGeometry(.65 + .4*Math.sin(.06*time), .15, 100, 30, 2 + Math.sin(.06*time), 2 + 2*Math.sin(.06*time) );
-	*/
-
-	setMeshRotation();
-	setSpherePos();
+	setMeshRotation(delta);
+	setSpherePos(sphereMesh);
 
 	/*
 	var newPos = figure8OrbitPosition(sphereMesh, 1, time);

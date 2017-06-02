@@ -118,11 +118,11 @@ var getSatVal = function(audioVal){
 	return 0;
 }
 
-var setSpherePos = function(){
-	orbitPosition(sphereMesh, 1.0);
+var setSpherePos = function(sphere){
+	orbitPosition(sphere, 1.0);
 }
 
-var setMeshRotation = function(){
+var setMeshRotation = function(delta){
 	mesh.rotation.y += 0.0125 * delta;
 	mesh.rotation.x += 0.05 * delta;
 }

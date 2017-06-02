@@ -26,13 +26,13 @@ var audioTriggers = {
 	},
 	'40' : function(){
 		getHueVal = function(audioVal){
-			return .75;
+			return .85;
 		}
 
 	},
 	'48' : function(){
 		getHueVal = function(audioVal){
-			return 1.0;
+			return 2 * audioVal + .5 * Math.sin(.04 * time);
 		}
 
 	},
@@ -40,13 +40,20 @@ var audioTriggers = {
 		getHueVal = function(audioVal){
 			return 2 * audioVal + .5 * Math.sin(.04 * time);
 		}
+		getSatVal = function(audioVal){
+			return 5 * audioVal + .5 * Math.sin(.05 * time);
+		}
 
 	},
-	'96' : function(){
+	'56' : function(){
 		mesh.geometry = new THREE.TorusGeometry( torusSize[0], torusSize[1], torusSize[2], torusSize[3] );
 		uniforms.uvScale.value = new THREE.Vector2( 3.0, 1.0 );
+		sphereMesh.material.color = new THREE.Color(0xffffff);
 		setSpherePos = function(sphere){
 			figure8OrbitPosition(sphere, 1.0);
+		}
+		getSatVal = function(audioVal){
+			return 0;
 		}
 	},
 	'100' : function(){
