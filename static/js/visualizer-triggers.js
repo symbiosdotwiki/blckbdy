@@ -1,7 +1,7 @@
 var triggered = []
 var counters = []
 var timerID = null;
-var visualizerFunctionStack = function(){};
+
 var audioTriggers = {
 	'0' : function(){
 		mesh.geometry = new THREE.SphereBufferGeometry( .6, 30, 30 );
@@ -10,13 +10,15 @@ var audioTriggers = {
 	},
 	'4' : function(){
 		uniforms.setInt.value = true;
-		mesh.scale.set(1, 1, 1);
 		getIntensityVal = function(audioVal){
 			return 3*audioVal;
 		}
 	},
 	'8' : function(){
 		uniforms.setInt.value = false;
+		getHueVal = function(audioVal){
+			return .5;
+		}
 		getSatVal = function(audioVal){
 			return 5 * audioVal + .5 * Math.sin(.05 * time);
 		}
@@ -34,7 +36,7 @@ var audioTriggers = {
 	},
 	'32' : function(){
 		getHueVal = function(audioVal){
-			return .5;
+			return .7;
 		}
 
 	},
@@ -53,7 +55,7 @@ var audioTriggers = {
 	},
 	'48' : function(){
 		getHueVal = function(audioVal){
-			return 2 * audioVal + .5 * Math.sin(.04 * time);
+			return 2 * audioVal + .4 * Math.sin(.04 * time) + .1;
 		}
 
 	},
@@ -86,7 +88,7 @@ var audioTriggers = {
 			figure8OrbitPosition(sphere, 1.0);
 		}
 		getHueVal = function(audioVal){
-			return 2 * audioVal + .5 * Math.sin(.04 * time);
+			return 2 * audioVal + .4 * Math.sin(.04 * time) + .1;
 		}
 	},
 	'72' : function(){
@@ -100,14 +102,14 @@ var audioTriggers = {
 			return 5 * audioVal + .5 * Math.sin(.05 * time);
 		}
 	},
-	'96' : function(){
+	'92' : function(){
 		var funFunction = function(t){
-			//mesh.geometry.dispose();
+			mesh.geometry.dispose();
 			mesh.geometry = new THREE.TorusGeometry( torusSize[0], torusSize[1]-.15*t, torusSize[2], torusSize[3] );
 		}
 		timerID = animateForBars(4, 8, funFunction);
 	},
-	'2' : function(){
+	'96' : function(){
 		clearInterval(timerID);
 		setSpherePos = function(sphere){
 			oscillatePosition(sphere, 1.0);
@@ -118,42 +120,24 @@ var audioTriggers = {
 		}
 		timerID = animateForBars(8, 8, funFunction);
 	},
-	'108' : function(){
-		clearInterval(timerID);
+	'100' : function(){
+		//clearInterval(timerID);
 		var funFunction = function(t){
 			uniforms.uvScale.value.x = (20.0-3) * t + 3.0;
 		}
-		timerID = animateForBars(8,32, funFunction);
+		timerID = animateForBars(4,32, funFunction);
 	},
 	'116' : function(){
 		clearInterval(timerID);
 		mesh.geometry = new THREE.TorusKnotGeometry(.65, .15, 200, 30, 4, 5 );
 		uniforms.uvScale.value = new THREE.Vector2( 20.0, 1.0 );
 		uniforms.setHue.value = false;
-	}
-}
-
-function animateForBars(bars, numBarsssss, funfunction){
-	var fullTime = 60.0 * (bars * 4) / bpm;
-	var curSongTime = time;
-	console.log(curSongTime);
-	console.log(fullTime);
-	console.log(0);
-	var oldVisualizerFunctionStack = visualizerFunctionStack;
-	visualizerFunctionStack = function(){
-		oldVisualizerFunctionStack();
-		if(!audio[0].paused && time - pausedTime < curSongTime + fullTime ){
-			var t = (time - curSongTime) / fullTime;
-			funfunction(t);
+		getSatVal = function(audioVal){
+			return 5 * audioVal + .2 * Math.sin(.05 * time) + .3;
 		}
 	}
-	setTimeout(function(){
-		funfunction(1.0);
-	}, fullTime + refreshTime);
-	return 1000000000;
 }
 
-/*
 function animateForBars(bars, numStepsPerBar, funfunction){
 	var fullTime = 1000.0 * 60.0 * (bars * 4) / bpm;
 	//var numSteps =  fullTime / (refreshTime * 4);
@@ -188,4 +172,3 @@ function animateForBars(bars, numStepsPerBar, funfunction){
 
 	return funID;
 }
-*/

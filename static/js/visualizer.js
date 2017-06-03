@@ -48,14 +48,14 @@ function loadAudio(){
 
 function pauseFade(){
 	if(audio[0].paused){
-		audioIcon.removeClass('fa-volume-off');
-		audioIcon.addClass('fa-volume-up');
+		audioIcon.removeClass('fa-play');
+		audioIcon.addClass('fa-pause');
 		audio[0].play();
 		audio.animate({volume: 1}, 100);
 	}
 	else{
-		audioIcon.removeClass('fa-volume-up');
-		audioIcon.addClass('fa-volume-off');
+		audioIcon.removeClass('fa-pause');
+		audioIcon.addClass('fa-play');
 		audio.animate({volume: 0}, 100, function(){
 			audio[0].pause();
 		});
@@ -100,7 +100,7 @@ function createEqualizer() {
 			barMargin: 3,
 			componentMargin: compMargin,
 			refreshTime: refreshTime,
-			//equiFunction: updateHSV,
+			equiFunction: updateHSV,
 		});
       $(audio[0]).bind('timeupdate', updateTime);
     }
@@ -156,13 +156,9 @@ var setMeshRotation = function(delta){
 	mesh.rotation.x += 0.05 * delta;
 }
 
-var updateHSV = function(delta){
+var updateHSV = function(){
 	if(!frequencyData){
 		return false;
-	}
-	if(audio[0].paused){
-		pausedTime += delta;
-		console.log(pausedTime);
 	}
 	updateStuff(songTime);
 	var sum1 = 0;
@@ -196,8 +192,6 @@ var updateHSV = function(delta){
     	trace1.y.push(frequencyData[i]/20 * blackBody(1.0, 400.0, i/length, sum1));
     }
     Plotly.newPlot(graphDiv, data, layout, plotOptions);
-
-    visualizerFunctionStack();
 }
 
 function blackBody(c1, c2, v, t){
