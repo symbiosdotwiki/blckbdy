@@ -133,21 +133,23 @@ var audioTriggers = {
 	}
 }
 
-
 function animateForBars(bars, numBarsssss, funfunction){
 	var fullTime = 60.0 * (bars * 4) / bpm;
-	var curSongTime = songTime;
+	var curSongTime = time;
 	console.log(curSongTime);
 	console.log(fullTime);
 	console.log(0);
 	var oldVisualizerFunctionStack = visualizerFunctionStack;
 	visualizerFunctionStack = function(){
 		oldVisualizerFunctionStack();
-		if(songTime < curSongTime + fullTime - .125){
-			var t = (songTime - curSongTime) / fullTime;
+		if(!audio[0].paused && time - pausedTime < curSongTime + fullTime ){
+			var t = (time - curSongTime) / fullTime;
 			funfunction(t);
 		}
 	}
+	setTimeout(function(){
+		funfunction(1.0);
+	}, fullTime + refreshTime);
 	return 1000000000;
 }
 

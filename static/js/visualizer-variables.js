@@ -46,6 +46,7 @@ var isMobile = false;
 var bpm = 126.0;
 var songTime = 0;
 var seeking = false;
+var pausedTime = 0;
 
 var audio = $('#audioPlayer');
 var pauseButton = $('#audioPause');

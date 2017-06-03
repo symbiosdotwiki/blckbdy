@@ -122,7 +122,6 @@ function init() {
 function animate() {
 	requestAnimationFrame( animate );
 	render();
-	updateHSV();
 }
 
 function setUpdateCubeMap() {
@@ -166,6 +165,7 @@ function render() {
 	renderer.clear();
 
 	var delta = 5 * clock.getDelta();
+	updateHSV(delta);
 	time += delta;
 	uniforms.time.value += 0.2 * delta;
 

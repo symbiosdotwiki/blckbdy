@@ -156,9 +156,13 @@ var setMeshRotation = function(delta){
 	mesh.rotation.x += 0.05 * delta;
 }
 
-var updateHSV = function(){
+var updateHSV = function(delta){
 	if(!frequencyData){
 		return false;
+	}
+	if(audio[0].paused){
+		pausedTime += delta;
+		console.log(pausedTime);
 	}
 	updateStuff(songTime);
 	var sum1 = 0;
