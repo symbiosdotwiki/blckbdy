@@ -6,31 +6,46 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="static/css/styles.css">
 		<link rel="stylesheet" href="static/css/font-awesome.min.css">
+		<link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
+		<link rel="icon" href="static/img/favicon.ico" type="image/x-icon">
 	</head>
 	<body>
 
-		<div id="container">
-
-			<div id="tester" style="width:600px;height:250px;"></div>
-
-			<audio id="audioPlayer" type="audio/mpeg"></audio>
-			<progress min="0" max="100" value="0"></progress>
-
-			<div id='icons' class='centerBox'>
-				<div id='playButton' style="display: none;">
-					<i class="fa fa-play fa-5x"></i>
-				</div>
-				<div id='loading'>
-					<i class="fa fa-spinner fa-pulse fa-5x"></i>
+		<div id="overlay" class="hidden">
+			<div id="overlay-container">
+				<div id='icons' class='centerBox'>
+					<div class="text">
+						<div id="intro-text">
+							the sun burns brightly through the night<br>
+							as we are shielded by the shadow of the earth
+						</div>
+						<div id="loading">
+							<span class="loadingDots"></span>loading<span class="loadingDots"></span>
+						</div>
+						<div id='playButton' style="display: none;">
+							click to start
+						</div>
+					</div>					
 				</div>
 			</div>
-			<button id="audioPause" class="sideButtons"><i id="audioIcon" class="fa fa-pause fa-5x"></i></button>
+		</div>
 
+		<div id="logo">
+			<a href="https://www.soundcloud.com/isomov"><img src="static/img/isomovlogo.png"></a>
+		</div>
+
+		<div id="container">
+			<div id="tester" style="width:600px;height:250px;"></div>
+			<audio id="audioPlayer" type="audio/mpeg"></audio>
+			<progress min="0" max="100" value="0"></progress>
+			<button id="audioPause" class="sideButtons" style="display: none;"><i id="audioIcon" class="fa fa-pause fa-2x"></i></button>
 		</div>
 
 		<script type="text/javascript" src="static/js/jquery-2.2.2.min.js"> </script>
 		<script type="text/javascript" src="static/js/jquery.reverseorder.js"></script>
 		<script type="text/javascript" src="static/js/jquery.equalizer.js"></script>
+
+		<script src="/static/js/overlay.js"></script>
 
 		<script src="static/js/three.js"></script>
 
@@ -46,6 +61,7 @@
 		<script src="static/js/postprocessing/FilmPass.js"></script>
 
 		<script src="static/js/Detector.js"></script>
+		<script src="static/js/GPUParticleSystem.js"></script>
 		<script src="static/js/libs/stats.min.js"></script>
 
 		<script src="static/js/libs/d3.min.js"></script>
@@ -207,17 +223,12 @@
 		</script>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
-
 			uniform vec2 uvScale;
 			varying vec2 vUv;
-
-			void main()
-			{
-
+			void main(){
 				vUv = uvScale * uv;
 				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 				gl_Position = projectionMatrix * mvPosition;
-
 			}
 
 		</script>

@@ -79,6 +79,7 @@ var audioTriggers = {
 		timerID = animateForBars(8, 16, funFunction2);
 	},
 	'64' : function(){
+		spawnerOptions.spawnRate = 0;
 		clearInterval(timerID);
 		uniforms.setInt.value = false;
 		mesh.geometry = new THREE.TorusGeometry( torusSize[0], torusSize[1], torusSize[2], torusSize[3] );
@@ -87,6 +88,7 @@ var audioTriggers = {
 			//mesh.scale.set(1, 1, 1);
 			figure8OrbitPosition(sphere, 1.0);
 		}
+		particleSystem.rotation.x = Math.PI/2;
 		getHueVal = function(audioVal){
 			return 2 * audioVal + .4 * Math.sin(.04 * time) + .1;
 		}
@@ -117,6 +119,7 @@ var audioTriggers = {
 		var funFunction = function(t){
 			mesh.geometry.dispose();
 			mesh.geometry = new THREE.TorusKnotGeometry(.65, .15, 200, 30, 1+3*t*t, 5*t );
+			console.log(t);
 		}
 		timerID = animateForBars(8, 8, funFunction);
 	},
@@ -128,6 +131,8 @@ var audioTriggers = {
 		timerID = animateForBars(4,32, funFunction);
 	},
 	'116' : function(){
+		spawnerOptions.spawnRate = 22000;
+		tick = 0;
 		clearInterval(timerID);
 		mesh.geometry = new THREE.TorusKnotGeometry(.65, .15, 200, 30, 4, 5 );
 		uniforms.uvScale.value = new THREE.Vector2( 20.0, 1.0 );

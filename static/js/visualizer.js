@@ -37,12 +37,7 @@ function loadAudio(){
 	audio[0].load();
 	audio[0].oncanplaythrough = function(){
 		loadingIcon.hide();
-		if(isMobile && notClicked){
-			playButton.show();
-		}
-		else{
-			audio[0].play();
-		}
+		playButton.show();
 	}
 }
 
@@ -156,42 +151,77 @@ var setMeshRotation = function(delta){
 	mesh.rotation.x += 0.05 * delta;
 }
 
+function setParticleOptions(pDelta){
+	tick += pDelta;
+	if ( tick < 0 ) tick = 0;
+
+	particleColor.setHSL(uniforms.hue.value, uniforms.saturation.value, .5);
+	options.color = particleColor;
+
+	if ( pDelta > 0 ) {
+		setParticlePosition();
+		spawnAmount = spawnerOptions.spawnRate;
+		if(isMobile){
+			spawnAmount /= 8;
+		}
+		for ( var x = 0; x < spawnAmount * pDelta; x++ ) {
+			particleSystem.spawnParticle( options );
+		}
+	}
+	particleSystem.update( tick );
+}
+
+var setParticlePosition = function(){
+	options.position.y = 100*Math.sin( tick * options.speed );
+}
+
+
 var updateHSV = function(){
 	if(!frequencyData){
 		return false;
 	}
 	updateStuff(songTime);
+
 	var sum1 = 0;
 	var sum2 = 0;
 	var sum3 = 0;
-	var length = frequencyData.length;
+	var length = 1.0;
 	var frac = 1.0;
-	for(var i = 0; i < length/frac; i++){
-        var val = frequencyData[i] / 255.0;
-        sum1 += val;
-    }
-    for(var i = 1*length/4; i < 3*length/4; i++){
-        var val = frequencyData[i] / 255.0;
-        sum2 += val;
-    }
-    for(var i = 3*length/4; i < length; i++){
-        var val = frequencyData[i] / 255.0;
-        sum3 += val;
-    }
-    sum1 = frac * sum1
-    //uniforms.saturation.value = saturation + sum1 ;
-    //console.log(sum2 / length*Math.sin(.05*time));
-    uniforms.hue.value = getHueVal(sum1 / length);
-    uniforms.saturation.value = getSatVal(sum3 / length);
-    uniforms.intensity.value = getIntensityVal(sum2 / length);
 
-    trace1.x = [];
-    trace1.y = [];
-    for(var i = 0; i < length; i++){
-    	trace1.x.push(i*2500/length);
-    	trace1.y.push(frequencyData[i]/20 * blackBody(1.0, 400.0, i/length, sum1));
-    }
-    Plotly.newPlot(graphDiv, data, layout, plotOptions);
+	if(!isMobile){
+		length = frequencyData.length;
+		for(var i = 0; i < length/frac; i++){
+	        var val = frequencyData[i] / 255.0;
+	        sum1 += val;
+	    }
+	    for(var i = 1*length/4; i < 3*length/4; i++){
+	        var val = frequencyData[i] / 255.0;
+	        sum2 += val;
+	    }
+	    for(var i = 3*length/4; i < length; i++){
+	        var val = frequencyData[i] / 255.0;
+	        sum3 += val;
+	    }
+	    sum1 = frac * sum1;
+	    trace1.x = [];
+	    trace1.y = [];
+	    for(var i = 0; i < length; i++){
+	    	trace1.x.push(i*2500/length);
+	    	trace1.y.push(frequencyData[i]/20 * blackBody(1.0, 400.0, i/length, sum1));
+	    }
+	    Plotly.newPlot(graphDiv, data, layout, plotOptions);
+	}
+	else{
+		sum1 = Math.random() * .25 + .2;
+		sum2 = Math.random() * .25 + .2;
+		sum3 = Math.random() * .25 + .2;
+	}
+
+	if(!audio[0].paused){
+		uniforms.hue.value = getHueVal(sum1 / length);
+    	uniforms.saturation.value = getSatVal(sum3 / length);
+    	uniforms.intensity.value = getIntensityVal(sum2 / length); 
+	}
 }
 
 function blackBody(c1, c2, v, t){

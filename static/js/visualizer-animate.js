@@ -1,17 +1,17 @@
 function init() {
 
+	//AUDIO STUFF
 	isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 	isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
 	isIE = !webkitAudioSafe();
 
 	loadAudio();
-
 	createEqualizer();
 
 	progressBar.click(function(e){
 		seek(e);
 	});
-
+	progressBar.hide();
 	pauseButton.click(pauseFade);
 
 	if (!isMobile && !isIE){
@@ -23,13 +23,20 @@ function init() {
 	}
 	else{
 		$('#tester').hide();
-		$('#playButton').click(function(){
-			audio[0].play();
-			playButton.hide();
-			notClicked = false;
-		});
 	}
 
+	$('#playButton').click(function(){
+		audio[0].play();
+		//playButton.hide();
+		notClicked = false;
+		$('#overlay').removeClass('shown');
+		setTimeout(function(){
+			$('#overlay').hide();
+			$('#audioPause').show();
+		}, 1000);
+	});
+
+	//BUILD SCENE
 	container = document.getElementById( 'container' );
 
 	camera = new THREE.PerspectiveCamera( 35, windowHalfX / windowHalfY, 1, 3000 );
@@ -37,6 +44,14 @@ function init() {
 
 	scene = new THREE.Scene();
 
+	var plight = new THREE.PointLight( 0x999999, .4, 100 );
+	plight.position.set( 0, 0, 0 );
+	scene.add( plight );
+
+	var alight = new THREE.AmbientLight( 0x444444);
+	scene.add( alight );
+
+	//BUILD GEOMETRY
 	uniforms = {
 
 		fogDensity: { value: 0.45 },
@@ -48,8 +63,8 @@ function init() {
 		resolution: { value: new THREE.Vector2() },
 		uvScale:    { value: new THREE.Vector2( 20.0, 1.0 ) },
 		deltaUV:    { value: new THREE.Vector2( .1, 0.0 ) },
-		texture1:   { value: textureLoader.load( "static/img/lava/cloud.png" ) },
-		texture2:   { value: textureLoader.load( "static/img/turing.png" ) },
+		texture1:   { value: textureLoader.load( "static/img/tex/cloud.png" ) },
+		texture2:   { value: textureLoader.load( "static/img/tex/turing.png" ) },
 		setHue: 	{ value: true },
 		setSat: 	{ value: true },
 		setInt: 	{ value: false },
@@ -71,14 +86,6 @@ function init() {
 	
 	mesh.rotation.x = 0.3;
 
-	var plight = new THREE.PointLight( 0x999999, .4, 100 );
-	plight.position.set( 0, 0, 0 );
-	scene.add( plight );
-
-	var alight = new THREE.AmbientLight( 0x444444);
-	scene.add( alight );
-
-
 	var geometry = new THREE.SphereBufferGeometry( .2, 32, 16 );
 
 	mirrorMaterial = new THREE.MeshBasicMaterial( { 
@@ -94,7 +101,17 @@ function init() {
 	scene.add(mesh);
 	mesh.visible = false;
 
-	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	// PARTICLES
+	particleSystem = new THREE.GPUParticleSystem( {
+		maxParticles: 25000
+	} );
+
+	particleSystem.scale.set(.01, .01, .01)
+
+	mesh.add( particleSystem );
+
+	// RENDERER
+	renderer = new THREE.WebGLRenderer( );//{ antialias: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	container.appendChild( renderer.domElement );
 	renderer.autoClear = false;
@@ -111,8 +128,7 @@ function init() {
 	composer.addPass( effectBloom );
 	composer.addPass( effectFilm );
 
-	//
-
+	// WINDOW RESIZE
 	onWindowResize();
 	window.addEventListener( 'resize', onWindowResize, false );
 }
@@ -151,7 +167,7 @@ function renderCubeMap(){
 	mirrorMaterial.envMap = mirrorSphereCamera.renderTarget;
 	sphereMesh.material = mirrorMaterial;
 	
-		sphereMesh.visible = true;
+	sphereMesh.visible = true;
 
 	if(!firstTex){
 		firstTex = mirrorSphereCamera.renderTarget.clone();
@@ -171,13 +187,11 @@ function render() {
 
 	var valAdd = 4*Math.sin(delta/100);
 	setMeshRotation(delta);
-	setSpherePos(sphereMesh);	
+	setSpherePos(sphereMesh);
+	setParticleOptions(delta  * spawnerOptions.timeScale / 5);	
+
 	composer.render( 0.01 );
 }
 
 init();
 animate();
-//setUpdateCubeMap();
-
-
-

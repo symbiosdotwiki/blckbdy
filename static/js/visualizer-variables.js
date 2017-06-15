@@ -1,4 +1,5 @@
-var container, stats;
+var container, stats, options, spawnerOptions, particleSystem, 
+	particleColor, tick = 0;
 
 var clock = new THREE.Clock();
 
@@ -56,3 +57,26 @@ var audioIcon = $('#audioIcon');
 var progressBar = $('progress');
 
 var sourceUrl = "static/audio/track.mp3";
+
+
+options = {
+	position: new THREE.Vector3(),
+	positionRandomness: 1,
+	velocity: new THREE.Vector3(),
+	velocityRandomness: 1,
+	color: 0xffffff,
+	colorRandomness: .2,
+	turbulence: 1,
+	lifetime: 2,
+	size: 3.2,
+	sizeRandomness: .7,
+	speed: 2,
+};
+
+spawnerOptions = {
+	spawnRate: 23000,
+	horizontalSpeed: 1.5,
+	verticalSpeed: 1.33,
+	timeScale: .2
+};
+particleColor = new THREE.Color();
