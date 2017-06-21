@@ -80,7 +80,7 @@ function loadAudio(){
 			audio[0].load();
 			audio[0].oncanplaythrough = function(){
 				loadingIcon.removeClass('shown');
-			playButton.addClass('shown');
+				playButton.addClass('shown');
 			}
 	  	} 
 	  	else {
@@ -134,8 +134,9 @@ function webkitAudioSafe(){
 function createEqualizer() {
     if(audio[0].paused) {
        window.setTimeout(createEqualizer, 100);
-    } else {
-      audio.equalizer({
+    } 
+    else {
+      	audio.equalizer({
 			width: 100.0,
 			height: 100.0,
 			bars: numBars,
@@ -145,7 +146,14 @@ function createEqualizer() {
 			refreshTime: refreshTime,
 			equiFunction: updateHSV,
 		});
-      $(audio[0]).bind('timeupdate', updateTime);
+      	$(audio[0]).bind('timeupdate', updateTime);
+      	$(audio[0]).bind('ended', function(){
+      		audioIcon.removeClass('fa-pause');
+    		audioIcon.addClass('fa-refresh');
+			pauseButton.click(function(){
+				window.location.reload();
+			});
+      	});
     }
 }
 
@@ -199,11 +207,15 @@ var setMeshRotation = function(delta){
 	mesh.rotation.x += 0.05 * delta;
 }
 
+var setParticleColor = function(){
+	particleColor.setHSL(uniforms.hue.value, uniforms.saturation.value, .5);
+}
+
 function setParticleOptions(pDelta){
 	tick += pDelta;
 	if ( tick < 0 ) tick = 0;
 
-	particleColor.setHSL(uniforms.hue.value, uniforms.saturation.value, .5);
+	setParticleColor();
 	options.color = particleColor;
 
 	if ( pDelta > 0 ) {

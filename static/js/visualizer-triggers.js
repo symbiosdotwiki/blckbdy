@@ -118,7 +118,7 @@ var audioTriggers = {
 		}
 		var funFunction = function(t){
 			mesh.geometry.dispose();
-			mesh.geometry = new THREE.TorusKnotGeometry(.65, .15, 200, 30, 1+3*t*t, 5*t );
+			mesh.geometry = new THREE.TorusKnotGeometry(.65, .15, 200, 30, 1.1+2.9*t*t, .1 + 4.9*t );
 			console.log(t);
 		}
 		timerID = animateForBars(8, 8, funFunction);
@@ -131,8 +131,11 @@ var audioTriggers = {
 		timerID = animateForBars(4,32, funFunction);
 	},
 	'116' : function(){
-		spawnerOptions.spawnRate = 22000;
+		spawnerOptions.spawnRate = 10000;
 		tick = 0;
+		setParticleColor = function(){
+			particleColor.setHSL(.6 + .2*Math.cos(time / 20), .9, .5);
+		}
 		clearInterval(timerID);
 		mesh.geometry = new THREE.TorusKnotGeometry(.65, .15, 200, 30, 4, 5 );
 		uniforms.uvScale.value = new THREE.Vector2( 20.0, 1.0 );

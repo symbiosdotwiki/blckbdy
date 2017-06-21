@@ -82,7 +82,7 @@ options = {
 };
 
 spawnerOptions = {
-	spawnRate: 23000,
+	spawnRate: 10000,
 	horizontalSpeed: 1.5,
 	verticalSpeed: 1.33,
 	timeScale: .2
