@@ -150,6 +150,7 @@ function createEqualizer() {
       	$(audio[0]).bind('ended', function(){
       		audioIcon.removeClass('fa-pause');
     		audioIcon.addClass('fa-refresh');
+    		pauseButton.unbind();
 			pauseButton.click(function(){
 				window.location.reload();
 			});

@@ -62,7 +62,8 @@ var loadingIcon = $('#loading');
 var audioIcon = $('#audioIcon');
 var progressBar = $('progress');
 
-var sourceUrl = "https://soundcloud.com/isomov/blckbdy-ft-rags/s-Xsgxd";
+//var sourceUrl = "https://soundcloud.com/isomov/blckbdy-ft-rags/s-Xsgxd";
+var sourceUrl = "https://soundcloud.com/xenonymsss/xsn001-isomov-blckbdy-ft-rags";
 var mySoundCloudClientId = "201ab721666dfdbcd9f078d52a1b54b5";
 
 $('.sc-redirect').attr('href', sourceUrl);
