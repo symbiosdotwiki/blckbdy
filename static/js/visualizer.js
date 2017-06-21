@@ -228,7 +228,7 @@ function setParticleOptions(pDelta){
 		setParticlePosition();
 		spawnAmount = spawnerOptions.spawnRate;
 		if(isMobile){
-			spawnAmount /= 8;
+			spawnAmount = 0;
 		}
 		for ( var x = 0; x < spawnAmount * pDelta; x++ ) {
 			particleSystem.spawnParticle( options );

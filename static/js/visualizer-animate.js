@@ -168,8 +168,26 @@ function onMouseMove(event){
 function onMouseUp(event){
 	touching = false;
 	clearInterval(touchTimer);
-	effectFilm.uniforms["center"].value = new THREE.Vector2(.0, .0);
-	effectFilm.uniforms["swirl"].value = 0.0;
+	var x = 0;
+	var numSteps = 20;
+	var numSecs = 2000;
+	var curTouchLocation = new THREE.Vector2(
+		touchLocation.x / numSteps, 
+		touchLocation.y / numSteps
+	);
+	var curTouchTime = effectFilm.uniforms["swirl"].value / numSteps;
+	touchTimer = setInterval(function () {
+		effectFilm.uniforms["center"].value = new THREE.Vector2(
+			curTouchLocation.x * (numSteps - x), 
+			curTouchLocation.y * (numSteps - x)
+		);
+		effectFilm.uniforms["swirl"].value -= curTouchTime;
+	   	if (++x === numSteps) {
+	    	window.clearInterval(touchTimer);
+	    	effectFilm.uniforms["center"].value = new THREE.Vector2(0,0);
+			effectFilm.uniforms["swirl"].value = 0;
+	   	}
+	}, numSecs / numSteps);
 }
 
 //

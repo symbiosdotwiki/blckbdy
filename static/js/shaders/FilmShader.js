@@ -59,7 +59,7 @@ THREE.FilmShader = {
 			"float angle = atan(normUV.y, normUV.x);",
 			"float radius = sqrt(normUV.y * normUV.y + normUV.x * normUV.x);",
 			// get us a sine and cosine
-			"vec2 sc = vec2( .5 + center.x + radius * cos(angle + swirl*radius), .5 - center.y + radius * sin(angle + swirl*radius) );",
+			"vec2 sc = vec2( .5 + center.x + radius * cos(angle + swirl / (radius + 0.5 / (swirl + 0.1) ) ), .5 - center.y + radius * sin(angle + swirl / (radius + 0.5 / (swirl + 0.1)) ) );",
 
 			"gl_FragColor =  texture2D( tDiffuse, sc );",
 
