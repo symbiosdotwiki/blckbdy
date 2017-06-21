@@ -178,7 +178,7 @@ function onMouseUp(event){
 	touching = false;
 	clearInterval(touchTimer);
 	var x = 0;
-	var numSteps = 20;
+	var numSteps = 40;
 	var numSecs = 2000;
 	var curTouchLocation = new THREE.Vector2(
 		touchLocation.x / numSteps, 
