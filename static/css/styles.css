@@ -149,6 +149,7 @@ body {
     */
     padding: 100px;
     box-sizing: border-box;
+    transform: translate(0, 10%);
 }
 
 #intro-text {
