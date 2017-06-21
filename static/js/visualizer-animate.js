@@ -118,7 +118,7 @@ function init() {
 
 	var renderModel = new THREE.RenderPass( scene, camera );
 	var effectBloom = new THREE.BloomPass( 1.1 );
-	var effectFilm = new THREE.FilmPass( 0.0, 0.95, 2048, false );
+	effectFilm = new THREE.FilmPass( 0.0, new THREE.Vector2(.0, .0));
 
 	effectFilm.renderToScreen = true;
 
@@ -128,9 +128,48 @@ function init() {
 	composer.addPass( effectBloom );
 	composer.addPass( effectFilm );
 
+	touchAmount = .2;
+
+	window.addEventListener( 'mousedown', onMouseDown, false );
+	window.addEventListener( 'mousemove', onMouseMove, false );
+	window.addEventListener( 'mouseup', onMouseUp, false );
+
+	window.addEventListener( 'touchstart', onMouseDown, false );
+	window.addEventListener( 'touchmove', onMouseMove, false );
+	window.addEventListener( 'touchend', onMouseUp, false );
+
 	// WINDOW RESIZE
 	onWindowResize();
 	window.addEventListener( 'resize', onWindowResize, false );
+}
+
+function getNormalizedTouch(event){
+	var x = event.offsetX / $( document ).width() - .5;
+	var y = event.offsetY / $( document ).height() - .5;
+	return new THREE.Vector2(x, y);
+}
+
+function onMouseDown(event){
+	if(touchTimer != null){
+		clearInterval(touchTimer);
+	}
+	touching = true;
+	touchLocation = getNormalizedTouch(event);
+	touchTimer = setInterval(function(){
+		effectFilm.uniforms["center"].value = touchLocation;
+		effectFilm.uniforms["swirl"].value = touchTime;
+    }, 50);
+}
+
+function onMouseMove(event){
+	touchLocation = getNormalizedTouch(event);
+}
+
+function onMouseUp(event){
+	touching = false;
+	clearInterval(touchTimer);
+	effectFilm.uniforms["center"].value = new THREE.Vector2(.0, .0);
+	effectFilm.uniforms["swirl"].value = 0.0;
 }
 
 //
@@ -184,6 +223,13 @@ function render() {
 	var delta = 5 * clock.getDelta();
 	time += delta;
 	uniforms.time.value += 0.2 * delta;
+
+	if(touching){
+		touchTime += touchAmount * delta;
+	}
+	else{
+		touchTime = 0;
+	}
 
 	var valAdd = 4*Math.sin(delta/100);
 	setMeshRotation(delta);

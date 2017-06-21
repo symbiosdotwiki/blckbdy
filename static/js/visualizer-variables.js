@@ -1,5 +1,5 @@
 var container, stats, options, spawnerOptions, particleSystem, 
-	particleColor, tick = 0;
+	particleColor, tick = 0, effectFilm;
 
 var clock = new THREE.Clock();
 
@@ -22,6 +22,12 @@ var hue = .5;
 var torusSize = [.65, 0.3, 30, 30]; 
 
 var time = 0;
+
+var touchTime = 0;
+var touching = false;
+var touchTimer = null;
+var touchLocation = new THREE.Vector2();
+var touchAmount;
 
 var mirrorSphereCamera = null;
 var sphereMesh = null;
@@ -56,8 +62,8 @@ var loadingIcon = $('#loading');
 var audioIcon = $('#audioIcon');
 var progressBar = $('progress');
 
-var sourceUrl = "static/audio/track.mp3";
-
+var sourceUrl = "https://soundcloud.com/isomov/blckbdy-ft-rags/s-Xsgxd";
+var mySoundCloudClientId = "201ab721666dfdbcd9f078d52a1b54b5";
 
 options = {
 	position: new THREE.Vector3(),

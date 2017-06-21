@@ -143,6 +143,8 @@ var audioTriggers = {
 	}
 }
 
+//history.go(-1 * history.length + 1);
+
 function animateForBars(bars, numStepsPerBar, funfunction){
 	var fullTime = 1000.0 * 60.0 * (bars * 4) / bpm;
 	//var numSteps =  fullTime / (refreshTime * 4);

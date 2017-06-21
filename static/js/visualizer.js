@@ -30,15 +30,81 @@ var figure8OrbitPosition = function(object, radius){
 	))
 }
 
+function scApiUrl(url, apiKey) {
+	var useSandBox = false;
+    var $doc = $(document);
+    var domain = useSandBox ? 'sandbox-soundcloud.com' : 'soundcloud.com';
+    var secureDocument = (document.location.protocol === 'https:'); 
+	var resolver = ( secureDocument || (/^https/i).test(url) ? 'https' : 'http') + '://api.' + domain + '/resolve?url=';
+    var params = 'format=json&consumer_key=' + apiKey +'&callback=?';
+
+	// force the secure url in the secure environment
+  	if( secureDocument ) {
+    	url = url.replace(/^http:/, 'https:');
+  	}
+
+  	// check if it's already a resolved api url
+  	if ( (/api\./).test(url) ) {
+    	return url + '?' + params;
+  	} 
+  	else {
+  		return resolver + url + '&' + params;
+	}
+}
+
+function loadUrl(URL, apiKey) {
+	var apiUrl = scApiUrl(URL, apiKey);
+	$.getJSON(apiUrl, function(data) {
+	  	if(data.duration){
+	    	data.permalink_url = URL;
+	  	}
+	  	stream_url = data.stream_url + (/\?/.test(data.stream_url) ? '&' : '?') + 'consumer_key=' + apiKey;
+	  	console.log(stream_url);
+	  	audio.attr("src", stream_url);
+		audio[0].pause();
+		audio[0].load();
+		audio[0].oncanplaythrough = function(){
+			loadingIcon.hide();
+			playButton.show();
+		}
+	});
+};
+
 function loadAudio(){
 	loadingIcon.show();
-	audio.attr("src", sourceUrl);
-	audio[0].pause();
-	audio[0].load();
-	audio[0].oncanplaythrough = function(){
-		loadingIcon.hide();
-		playButton.show();
-	}
+	audio[0].crossOrigin = "anonymous";
+	SC.initialize({
+		client_id: mySoundCloudClientId,
+	});
+
+	var soundCloudURL = "https://soundcloud.com/madeon/madeon-cut-the-kid";
+	SC.get("/resolve", { url: sourceUrl }, function(result, err) {
+	  	if (err) {
+	    	console.error("bad url:", url, err);
+	    	return;
+	  	}
+	  	if(result.duration){
+	    	result.permalink_url = sourceUrl;
+	  	}
+	  	if (result.streamable && result.stream_url) {
+	  		var src = result.stream_url + (/\?/.test(result.stream_url) ? '&' : '?') + 'consumer_key=' + mySoundCloudClientId;
+	    	audio.attr("src", src);
+
+	    	console.log("link to music:", result.permalink_url);
+	    	console.log("link to band:", result.user.permalink_url);
+	    	console.log("name of song:", result.title);
+	    	console.log("name to band:", result.user.username);
+	    	audio[0].pause();
+			audio[0].load();
+			audio[0].oncanplaythrough = function(){
+				loadingIcon.hide();
+				playButton.show();
+			}
+	  	} 
+	  	else {
+	     	console.error("not streamable:", url);
+	  	}
+	});
 }
 
 function pauseFade(){
