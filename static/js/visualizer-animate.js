@@ -1,3 +1,12 @@
+if ( ! Detector.webgl ){
+	$('#loading').removeClass('shown');
+	$('#noWebGL').addClass('shown');
+}
+else {
+	init();
+	animate();
+}
+
 function init() {
 
 	//AUDIO STUFF
@@ -128,7 +137,7 @@ function init() {
 	composer.addPass( effectBloom );
 	composer.addPass( effectFilm );
 
-	touchAmount = .2;
+	touchAmount = .1;
 
 	window.addEventListener( 'mousedown', onMouseDown, false );
 	window.addEventListener( 'mousemove', onMouseMove, false );
@@ -256,6 +265,3 @@ function render() {
 
 	composer.render( 0.01 );
 }
-
-init();
-animate();

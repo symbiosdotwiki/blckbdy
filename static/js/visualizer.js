@@ -52,24 +52,6 @@ function scApiUrl(url, apiKey) {
 	}
 }
 
-function loadUrl(URL, apiKey) {
-	var apiUrl = scApiUrl(URL, apiKey);
-	$.getJSON(apiUrl, function(data) {
-	  	if(data.duration){
-	    	data.permalink_url = URL;
-	  	}
-	  	stream_url = data.stream_url + (/\?/.test(data.stream_url) ? '&' : '?') + 'consumer_key=' + apiKey;
-	  	console.log(stream_url);
-	  	audio.attr("src", stream_url);
-		audio[0].pause();
-		audio[0].load();
-		audio[0].oncanplaythrough = function(){
-			loadingIcon.hide();
-			playButton.show();
-		}
-	});
-};
-
 function loadAudio(){
 	loadingIcon.show();
 	audio[0].crossOrigin = "anonymous";
@@ -97,8 +79,8 @@ function loadAudio(){
 	    	audio[0].pause();
 			audio[0].load();
 			audio[0].oncanplaythrough = function(){
-				loadingIcon.hide();
-				playButton.show();
+				loadingIcon.removeClass('shown');
+			playButton.addClass('shown');
 			}
 	  	} 
 	  	else {

@@ -1,4 +1,5 @@
 $('#overlay').addClass('shown');
+$('.logo').addClass('shown');
 
 var showLoadingDots = function() {
     var showDots = setInterval(function(){   

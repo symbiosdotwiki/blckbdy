@@ -23,27 +23,35 @@
 	</head>
 	<body>
 
+		<div class="black-cover hidden shown"></div>
+
 		<div id="overlay" class="hidden">
 			<div id="overlay-container">
 				<div id='icons' class='centerBox'>
 					<div class="text">
 						<div id="intro-text">
-							the sun burns brightly through the night<br>
+							the sun shines brightly through the night<br>
 							as we are shielded by the shadow of the earth
 						</div>
-						<div id="loading">
+						<div id="loading" class="hidden shown">
 							<span class="loadingDots"></span>loading<span class="loadingDots"></span>
 						</div>
-						<div id='playButton' style="display: none;">
+						<div id="playButton" class="hidden">
 							click to start
+						</div>
+						<div id="noWebGL" class="hidden">
+							<a class="sc-redirect" href="">WebGL is not supported in your browser, please click here to enjoy the track on Soundcloud.</a>
 						</div>
 					</div>					
 				</div>
 			</div>
 		</div>
 
-		<div id="logo">
-			<a href="https://www.soundcloud.com/isomov" target="_blank"><img src="static/img/isomovlogo.png"></a>
+		<div class="logo top-right hidden">
+			<a class="sc-redirect" href="" target="_blank"><img src="static/img/isomovlogo.png"></a>
+		</div>
+		<div class="logo bottom-left logo-small hidden">
+			<a class="sc-redirect" href="" target="_blank"><img src="static/img/xenonymslogo.png"></a>
 		</div>
 
 		<div id="container">
@@ -53,7 +61,7 @@
 			<button id="audioPause" class="sideButtons" style="display: none;"><i id="audioIcon" class="fa fa-pause fa-2x"></i></button>
 		</div>
 
-		<script type="text/javascript" src="static/js/jquery-2.2.2.min.js"> </script>
+		<script type="text/javascript" src="static/js/jquery.min.js"> </script>
 		<script type="text/javascript" src="static/js/jquery.reverseorder.js"></script>
 		<script type="text/javascript" src="static/js/jquery.equalizer.js"></script>
 
@@ -62,6 +70,7 @@
 		<script src="static/js/overlay.js"></script>
 
 		<script src="static/js/three.js"></script>
+		<script src="static/js/visualizer-variables.js"></script>
 
 		<script src="static/js/shaders/ConvolutionShader.js"></script>
 		<script src="static/js/shaders/CopyShader.js"></script>
@@ -247,10 +256,6 @@
 
 		</script>
 
-		<script>
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-		</script>
-		<script src="static/js/visualizer-variables.js"></script>
 		<script src="static/js/visualizer-triggers.js"></script>
 		<script src="static/js/visualizer.js"></script>
 		<script src="static/js/visualizer-animate.js"></script>

@@ -65,6 +65,8 @@ var progressBar = $('progress');
 var sourceUrl = "https://soundcloud.com/isomov/blckbdy-ft-rags/s-Xsgxd";
 var mySoundCloudClientId = "201ab721666dfdbcd9f078d52a1b54b5";
 
+$('.sc-redirect').attr('href', sourceUrl);
+
 options = {
 	position: new THREE.Vector3(),
 	positionRandomness: 1,
