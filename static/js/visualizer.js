@@ -54,39 +54,40 @@ function scApiUrl(url, apiKey) {
 
 function loadAudio(){
 	loadingIcon.show();
-	audio[0].crossOrigin = "anonymous";
-	SC.initialize({
-		client_id: mySoundCloudClientId,
-	});
+	// audio[0].crossOrigin = "anonymous";
+	// SC.initialize({
+	// 	client_id: mySoundCloudClientId,
+	// });
 
 	var soundCloudURL = "https://soundcloud.com/madeon/madeon-cut-the-kid";
-	SC.get("/resolve", { url: sourceUrl }, function(result, err) {
-	  	if (err) {
-	    	console.error("bad url:", url, err);
-	    	return;
-	  	}
-	  	if(result.duration){
-	    	result.permalink_url = sourceUrl;
-	  	}
-	  	if (result.streamable && result.stream_url) {
-	  		var src = result.stream_url + (/\?/.test(result.stream_url) ? '&' : '?') + 'consumer_key=' + mySoundCloudClientId;
+	// SC.get("/resolve", { url: sourceUrl }, function(result, err) {
+	//   	if (err) {
+	//     	console.error("bad url:", url, err);
+	//     	return;
+	//   	}
+	//   	if(result.duration){
+	//     	result.permalink_url = sourceUrl;
+	//   	}
+	//   	if (result.streamable && result.stream_url) {
+	  		var src = '';//result.stream_url + (/\?/.test(result.stream_url) ? '&' : '?') + 'consumer_key=' + mySoundCloudClientId;
+	  		src = '/static/audio/BLCKBDY.mp3'
 	    	audio.attr("src", src);
 
-	    	console.log("link to music:", result.permalink_url);
-	    	console.log("link to band:", result.user.permalink_url);
-	    	console.log("name of song:", result.title);
-	    	console.log("name to band:", result.user.username);
+	    	// console.log("link to music:", result.permalink_url);
+	    	// console.log("link to band:", result.user.permalink_url);
+	    	// console.log("name of song:", result.title);
+	    	// console.log("name to band:", result.user.username);
 	    	audio[0].pause();
 			audio[0].load();
 			audio[0].oncanplaythrough = function(){
 				loadingIcon.removeClass('shown');
 				playButton.addClass('shown');
 			}
-	  	} 
-	  	else {
-	     	console.error("not streamable:", url);
-	  	}
-	});
+	//   	} 
+	//   	else {
+	//      	console.error("not streamable:", url);
+	//   	}
+	// });
 }
 
 function pauseFade(){
